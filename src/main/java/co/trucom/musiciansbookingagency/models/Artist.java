@@ -43,6 +43,12 @@ public class Artist implements Serializable {
 		this.gigs = gigs;
 	}
 
+	public void printGigs() {
+		for(Gig gig: gigs) {
+			System.out.println(gig);
+		}
+	}
+
 	public void addGig(Gig gig) {
 		gigs.add(gig);
 	}

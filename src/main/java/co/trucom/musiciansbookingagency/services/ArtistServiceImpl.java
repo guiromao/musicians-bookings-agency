@@ -44,7 +44,7 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	@CachePut(value = "artists", key = "#artist.artistId", unless = "#artist.artistId == null")
+	@CachePut(value = {"artists", "gigs"}, key = "#artist.artistId", unless = "#artist.artistId == null")
 	public Artist save(Artist artist) {
 		return artistRepository.saveAndFlush(artist);
 	}
@@ -56,12 +56,13 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	public GigDto addGig(GigDto dto) {
-		Artist artist = getArtistById(dto.getArtistId()).get();
+	public GigDto addGig(Long artistId, GigDto dto) {
+		Artist artist = getArtistById(artistId).get();
 		Gig gig = GigConverter.dtoToGig(dto);
 		gig.setArtist(artist);
 		artist.addGig(gig);
 		save(artist);
+		//artist.printGigs();
 		
 		gig = gigRepository.saveAndFlush(gig);
 
@@ -76,6 +77,12 @@ public class ArtistServiceImpl implements ArtistService {
 	@Override
 	public Set<GigDto> getGigsByCity(Long artistId, String city) {
 		return GigConverter.listToDto(gigRepository.findByArtistAndCity(artistId, city));
+	}
+
+	@Override
+	public void deleteAll() {
+		artistRepository.deleteAll();
+		gigRepository.deleteAll();
 	}
 
 }

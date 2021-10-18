@@ -17,9 +17,11 @@ public interface ArtistService {
 
 	void deleteById(Long id);
 
-	GigDto addGig(GigDto dto);
+	GigDto addGig(Long artistId, GigDto dto);
 
 	Set<GigDto> getGigs(Long artistId);
 
 	Set<GigDto> getGigsByCity(Long artistId, String city);
+
+	void deleteAll();
 }

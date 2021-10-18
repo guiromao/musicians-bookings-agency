@@ -7,6 +7,9 @@ import co.trucom.musiciansbookingagency.models.Artist;
 
 public class ArtistConverter {
 
+	private ArtistConverter() {
+	}
+
 	public static Artist dtoToArtist(ArtistDto dto) {
 		ModelMapper mapper = new ModelMapper();
 		return mapper.map(dto, Artist.class);

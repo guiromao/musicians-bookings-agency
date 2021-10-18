@@ -45,6 +45,11 @@ public class Gig implements Serializable {
 		this.artist = artist;
 	}
 
+	@Override
+	public String toString() {
+		return "{ GigID=" + gigId + ", Location=" + location + ", Band=" + artist.getName() + " }";
+	}
+	
 	public Long getGigId() {
 		return gigId;
 	}

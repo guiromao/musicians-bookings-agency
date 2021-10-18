@@ -63,6 +63,13 @@ public class ArtistController {
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
+	@DeleteMapping({"", "/"})
+	public ResponseEntity deleteAll() {
+		artistService.deleteAll();
+		
+		return new ResponseEntity(HttpStatus.OK);
+	}
+	
 	@DeleteMapping("/{artistId}")
 	public ResponseEntity deleteArtist(@PathVariable Long artistId) {
 		artistService.deleteById(artistId);
@@ -72,7 +79,7 @@ public class ArtistController {
 	
 	@PostMapping("/{artistId}/gigs")
 	public ResponseEntity<GigDto> addGigToArtist(@PathVariable Long artistId, @RequestBody GigDto gigDto) {
-		return new ResponseEntity<>(artistService.addGig(gigDto), HttpStatus.CREATED);
+		return new ResponseEntity<>(artistService.addGig(artistId, gigDto), HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{artistId}/gigs")

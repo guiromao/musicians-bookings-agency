@@ -19,7 +19,6 @@ public class GigConverter {
 
 	public static GigDto gigToDto(Gig gig) {
 		return new GigDto(gig.getGigId(),
-				gig.getArtist().getArtistId(), 
 				gig.getLocation(),
 				Utils.dateToString(gig.getDate()));
 	}
