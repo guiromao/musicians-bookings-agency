@@ -44,7 +44,7 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	@CachePut(value = {"artists", "gigs"}, key = "#artist.artistId", unless = "#artist.artistId == null")
+	@CachePut(value = {"artists"}, key = "#artist.artistId", unless = "#artist.artistId == null")
 	public Artist save(Artist artist) {
 		return artistRepository.saveAndFlush(artist);
 	}
@@ -80,7 +80,7 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	@CacheEvict(allEntries = true)
+	@CacheEvict(value = "artists", allEntries = true)
 	public void deleteAll() {
 		artistRepository.deleteAll();
 		gigRepository.deleteAll();
