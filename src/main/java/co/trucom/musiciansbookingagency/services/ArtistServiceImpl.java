@@ -63,7 +63,7 @@ public class ArtistServiceImpl implements ArtistService {
 		artist.addGig(gig);
 		save(artist);
 		//artist.printGigs();
-		
+
 		gig = gigRepository.saveAndFlush(gig);
 
 		return GigConverter.gigToDto(gig);
@@ -80,6 +80,7 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
+	@CacheEvict(allEntries = true)
 	public void deleteAll() {
 		artistRepository.deleteAll();
 		gigRepository.deleteAll();
