@@ -2,7 +2,6 @@ package co.trucom.musiciansbookingagency.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +15,6 @@ import co.trucom.musiciansbookingagency.dtos.converters.GigConverter;
 import co.trucom.musiciansbookingagency.models.Artist;
 import co.trucom.musiciansbookingagency.models.Gig;
 import co.trucom.musiciansbookingagency.repos.ArtistRepository;
-import co.trucom.musiciansbookingagency.repos.GigRepository;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -24,18 +22,30 @@ public class ArtistServiceImpl implements ArtistService {
 	private static final Logger log = Logger.getLogger(ArtistServiceImpl.class.getName());
 
 	private ArtistRepository artistRepository;
-	private GigRepository gigRepository;
 
-	public ArtistServiceImpl(ArtistRepository artistRepo, GigRepository gigRepo) {
+	public ArtistServiceImpl(ArtistRepository artistRepo) {
 		artistRepository = artistRepo;
-		gigRepository = gigRepo;
 	}
 
 	@Override
-	@Cacheable(value = "artists", key = "#id")
+	@Cacheable(value = {"artists", "gigs"}, key = "#id")
 	public Optional<Artist> getArtistById(Long id) {
 		log.log(Level.FINE, "Got artist with ID {0} from the database.", id);
 		return artistRepository.findById(id);
+	}
+	
+	@Override
+	public GigDto saveGig(GigDto dto, Long artistId) {
+		Gig gig = GigConverter.dtoToGig(dto);
+		Artist artist = getArtistById(artistId).get();
+		gig.setArtist(artist);
+		artist.addGig(gig);
+		artistRepository.saveAndFlush(artist);
+		
+		List<Gig> gigs = artist.getGigs();
+		Gig lastGig = gigs.get(gigs.size() - 1);
+		
+		return GigConverter.gigToDto(lastGig);
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	@CachePut(value = {"artists"}, key = "#artist.artistId", unless = "#artist.artistId == null")
+	@CachePut(value = "artists", key = "#artist.artistId", unless = "#artist.artistId == null")
 	public Artist save(Artist artist) {
 		return artistRepository.saveAndFlush(artist);
 	}
@@ -56,34 +66,16 @@ public class ArtistServiceImpl implements ArtistService {
 	}
 
 	@Override
-	public GigDto addGig(Long artistId, GigDto dto) {
-		Artist artist = getArtistById(artistId).get();
-		Gig gig = GigConverter.dtoToGig(dto);
-		gig.setArtist(artist);
-		artist.addGig(gig);
-		save(artist);
-		//artist.printGigs();
-
-		gig = gigRepository.saveAndFlush(gig);
-
-		return GigConverter.gigToDto(gig);
-	}
-
-	@Override
-	public Set<GigDto> getGigs(Long artistId) {
-		return GigConverter.listToDto(gigRepository.findByArtistId(artistId));
-	}
-
-	@Override
-	public Set<GigDto> getGigsByCity(Long artistId, String city) {
-		return GigConverter.listToDto(gigRepository.findByArtistAndCity(artistId, city));
+	@CacheEvict(value = "artists", allEntries = true)
+	public void deleteAll() {
+		artistRepository.deleteAll();
+		//gigService.deleteAll();
 	}
 
 	@Override
 	@CacheEvict(value = "artists", allEntries = true)
-	public void deleteAll() {
-		artistRepository.deleteAll();
-		gigRepository.deleteAll();
+	public void deleteCache() {
+		//Only for deleting cache values
 	}
 
 }

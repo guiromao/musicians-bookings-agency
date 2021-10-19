@@ -19,18 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 import co.trucom.musiciansbookingagency.dtos.ArtistDto;
 import co.trucom.musiciansbookingagency.dtos.GigDto;
 import co.trucom.musiciansbookingagency.dtos.converters.ArtistConverter;
+import co.trucom.musiciansbookingagency.dtos.converters.GigConverter;
 import co.trucom.musiciansbookingagency.models.Artist;
 import co.trucom.musiciansbookingagency.models.Gig;
 import co.trucom.musiciansbookingagency.services.ArtistService;
+import co.trucom.musiciansbookingagency.services.GigService;
 
 @RestController
 @RequestMapping("/api/v1/artists")
 public class ArtistController {
 
 	private ArtistService artistService;
+	private GigService gigService;
 
-	public ArtistController(ArtistService service) {
-		artistService = service;
+	public ArtistController(ArtistService artService, GigService gService) {
+		artistService = artService;
+		gigService = gService;
 	}
 
 	@GetMapping("/{artistId}")
@@ -77,19 +81,28 @@ public class ArtistController {
 		return new ResponseEntity(HttpStatus.OK);
 	}
 	
+	@DeleteMapping("/cache")
+	public ResponseEntity deleteCache() {
+		artistService.deleteCache();
+		
+		return new ResponseEntity(HttpStatus.OK);
+	}
+	
 	@PostMapping("/{artistId}/gigs")
 	public ResponseEntity<GigDto> addGigToArtist(@PathVariable Long artistId, @RequestBody GigDto gigDto) {
-		return new ResponseEntity<>(artistService.addGig(artistId, gigDto), HttpStatus.CREATED);
+		GigDto dto = artistService.saveGig(gigDto, artistId);
+
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{artistId}/gigs")
-	public ResponseEntity<Set<GigDto>> listOfGigs(@PathVariable Long artistId) {
-		return new ResponseEntity<>(artistService.getGigs(artistId), HttpStatus.OK);
+	public ResponseEntity<List<GigDto>> listOfGigs(@PathVariable Long artistId) {
+		return new ResponseEntity<>(gigService.getGigsFromArtistId(artistId), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{artistId}/location")
-	public ResponseEntity<Set<GigDto>> listOfGigsByCity(@PathVariable Long artistId, @RequestParam String city) {
-		return new ResponseEntity<>(artistService.getGigsByCity(artistId, city), HttpStatus.OK);
+	public ResponseEntity<List<GigDto>> listOfGigsByCity(@PathVariable Long artistId, @RequestParam String city) {
+		return new ResponseEntity<>(gigService.getGigsFromArtistAndCity(artistId, city), HttpStatus.OK);
 	}
 
 }

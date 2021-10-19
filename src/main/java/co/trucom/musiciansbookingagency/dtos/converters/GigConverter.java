@@ -1,7 +1,7 @@
 package co.trucom.musiciansbookingagency.dtos.converters;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import co.trucom.musiciansbookingagency.dtos.GigDto;
 import co.trucom.musiciansbookingagency.models.Gig;
@@ -23,8 +23,8 @@ public class GigConverter {
 				Utils.dateToString(gig.getDate()));
 	}
 
-	public static Set<GigDto> listToDto(Set<Gig> list) {
-		Set<GigDto> result = new HashSet<>();
+	public static List<GigDto> listToDto(List<Gig> list) {
+		List<GigDto> result = new ArrayList<>();
 
 		for(Gig gig: list) {
 			result.add(gigToDto(gig));

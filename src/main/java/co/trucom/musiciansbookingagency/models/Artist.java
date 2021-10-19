@@ -1,9 +1,10 @@
 package co.trucom.musiciansbookingagency.models;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "artists")
@@ -27,18 +30,19 @@ public class Artist implements Serializable {
 	@Column(name = "artist_name")
 	private String name;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "artist")
-	private Set<Gig> gigs;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "artist", cascade = CascadeType.ALL)
+	@JsonManagedReference(value="gigs")
+	private List<Gig> gigs;
 
 	public Artist() {
 	}
 
 	public Artist(String name) {
 		this.name = name;
-		this.gigs = new HashSet<>();
+		this.gigs = new ArrayList<>();
 	}
 
-	public Artist(String name, Set<Gig> gigs) {
+	public Artist(String name, List<Gig> gigs) {
 		this.name = name;
 		this.gigs = gigs;
 	}
@@ -61,7 +65,7 @@ public class Artist implements Serializable {
 		return name;
 	}
 
-	public Set<Gig> getGigs() {
+	public List<Gig> getGigs() {
 		return gigs;
 	}
 
@@ -73,7 +77,7 @@ public class Artist implements Serializable {
 		this.name = name;
 	}
 
-	public void setGigs(Set<Gig> gigs) {
+	public void setGigs(List<Gig> gigs) {
 		this.gigs = gigs;
 	}
 

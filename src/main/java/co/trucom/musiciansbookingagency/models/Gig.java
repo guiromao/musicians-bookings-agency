@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "gigs")
@@ -33,7 +33,8 @@ public class Gig implements Serializable {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "artist_id")
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference(value="gigs")
 	private Artist artist;
 
 	public Gig() {

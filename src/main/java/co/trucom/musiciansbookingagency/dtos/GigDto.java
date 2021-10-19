@@ -1,6 +1,10 @@
 package co.trucom.musiciansbookingagency.dtos;
 
-public class GigDto {
+import java.io.Serializable;
+
+public class GigDto implements Serializable {
+
+	private static final long serialVersionUID = -7027946232256152989L;
 
 	private Long gigId;
 	private String location;
